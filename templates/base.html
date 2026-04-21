@@ -13,27 +13,8 @@
 
             <nav class="nav-links">
                 <a href="{{ url_for('index') }}">Calculator</a>
-
-                {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
-                    <span class="nav-user">{{ current_user.username }}</span>
-                    <a href="{{ url_for('logout') }}">Logout</a>
-                {% else %}
-                    <a href="{{ url_for('login') }}">Login</a>
-                    <a href="{{ url_for('signup') }}">Signup</a>
-                {% endif %}
             </nav>
         </header>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-stack">
-                    {% for category, message in messages %}
-                        <div class="alert {{ category }}">{{ message }}</div>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
 
         {% if error %}
             <div class="alert error">{{ error }}</div>
