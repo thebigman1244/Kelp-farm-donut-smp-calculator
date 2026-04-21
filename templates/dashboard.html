@@ -1,0 +1,7 @@
+<h1>Your Projects</h1>
+
+{% for p in projects %}
+<p>{{ p[2] }} 
+<a href="/delete/{{ p[0] }}">Delete</a>
+</p>
+{% endfor %}
