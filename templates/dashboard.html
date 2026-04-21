@@ -11,30 +11,41 @@
 </header>
 
 <section class="card">
-    {% if projects %}
+    {% if projects and projects|length > 0 %}
         <div class="results-grid">
             {% for project in projects %}
                 <div class="project-card">
                     <div class="project-top">
                         <div>
-                            <h3>{{ project.name }}</h3>
+                            <h3>{{ project["name"] }}</h3>
                             <p class="project-meta">
-                                {{ project.kelp_plants }} plants · {{ project.smokers }} smokers · {{ project.hours }} hours
+                                {{ fmt_num(project["kelp_plants"]) }} plants ·
+                                {{ fmt_num(project["smokers"]) }} smokers ·
+                                {{ fmt_num(project["hours"]) }} hours
                             </p>
                         </div>
-                        <div class="project-actions">
-                            <a class="secondary-btn" href="{{ url_for('load_project', project_id=project.id) }}">Load</a>
 
-                            <form method="post" action="{{ url_for('delete_project', project_id=project.id) }}">
+                        <div class="project-actions">
+                            <a
+                                class="secondary-btn"
+                                href="{{ url_for('load_project', project_id=project['id']) }}"
+                            >
+                                Load
+                            </a>
+
+                            <form
+                                method="post"
+                                action="{{ url_for('delete_project', project_id=project['id']) }}"
+                            >
                                 <button type="submit" class="danger-btn">Delete</button>
                             </form>
                         </div>
                     </div>
 
                     <div class="project-details">
-                        <span>Sell/block: {{ fmt_money(project.sell_price_per_block) }}</span>
-                        <span>Rod cost: {{ fmt_money(project.blaze_rod_cost) }}</span>
-                        <span>Growth tick: {{ fmt_num(project.seconds_per_growth_tick) }}s</span>
+                        <span>Sell/block: {{ fmt_money(project["sell_price_per_block"]) }}</span>
+                        <span>Rod cost: {{ fmt_money(project["blaze_rod_cost"]) }}</span>
+                        <span>Growth tick: {{ fmt_num(project["seconds_per_growth_tick"]) }}s</span>
                     </div>
                 </div>
             {% endfor %}
