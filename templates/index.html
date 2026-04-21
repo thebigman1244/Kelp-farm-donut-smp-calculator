@@ -8,7 +8,7 @@
         <h1>Kelp Profit Calculator</h1>
         <p>
             Estimate output, fuel cost, stacks per smoker, total stacks, gross revenue,
-            and net profit. Save projects to your account and reload them later.
+            net profit, time to 1B, and the setup needed to hit a target money goal.
         </p>
     </div>
 </header>
@@ -58,15 +58,20 @@
                     <span>Average seconds per kelp growth tick</span>
                     <input type="number" min="0.01" step="0.01" name="seconds_per_growth_tick" value="{{ form.seconds_per_growth_tick }}" required>
                 </label>
+
+                <label>
+                    <span>Target money goal</span>
+                    <input type="number" min="1" step="1" name="target_money" value="{{ form.target_money }}" required>
+                </label>
+
+                <label>
+                    <span>Target days</span>
+                    <input type="number" min="0.01" step="0.01" name="target_days" value="{{ form.target_days }}" required>
+                </label>
             </div>
 
-            <div class="button-row split">
-                <button type="submit" name="action" value="calculate">Calculate</button>
-
-                {% if current_user.is_authenticated %}
-                    <input class="project-name-input" type="text" name="project_name" placeholder="Project name">
-                    <button type="submit" name="action" value="save_project">Save Project</button>
-                {% endif %}
+            <div class="button-row">
+                <button type="submit">Calculate</button>
             </div>
 
             <div class="help-box">
@@ -76,6 +81,7 @@
                     <li><strong>Blaze rod cost</strong>: directly changes net profit.</li>
                     <li><strong>Growth tick time</strong>: real farm-side output depends on server behavior and lag.</li>
                     <li><strong>Smoker timing</strong>: determines your hard throughput ceiling.</li>
+                    <li><strong>Target money + target days</strong>: calculates the balanced setup needed to hit your goal.</li>
                 </ul>
             </div>
         </form>
@@ -126,10 +132,39 @@
                 <div class="result-row"><span>Farm utilization</span><strong>{{ fmt_num(results.farm_utilization) }}%</strong></div>
                 <div class="result-row"><span>Smoker utilization</span><strong>{{ fmt_num(results.smoker_utilization) }}%</strong></div>
             </div>
+
+            <div class="section-title">Profit rates</div>
+            <div class="results-grid">
+                <div class="result-row"><span>Profit per hour</span><strong>{{ fmt_money(results.profit_per_hour) }}</strong></div>
+                <div class="result-row"><span>Profit per day</span><strong>{{ fmt_money(results.profit_per_day) }}</strong></div>
+
+                {% if results.days_to_1b is not none %}
+                    <div class="result-row"><span>Time to 1B (days)</span><strong>{{ fmt_num(results.days_to_1b) }}</strong></div>
+                    <div class="result-row"><span>Time to 1B (hours)</span><strong>{{ fmt_num(results.hours_to_1b) }}</strong></div>
+                {% else %}
+                    <div class="result-row"><span>Time to 1B</span><strong>Not profitable</strong></div>
+                {% endif %}
+            </div>
+
+            <div class="section-title">Target planner</div>
+            <div class="results-grid">
+                <div class="result-row"><span>Target money</span><strong>{{ fmt_money(results.target_money) }}</strong></div>
+                <div class="result-row"><span>Target days</span><strong>{{ fmt_num(results.target_days) }}</strong></div>
+                <div class="result-row"><span>Required daily profit</span><strong>{{ fmt_money(results.target_daily_profit) }}</strong></div>
+
+                {% if results.scale_multiplier is not none %}
+                    <div class="result-row"><span>Scale multiplier vs current setup</span><strong>{{ fmt_num(results.scale_multiplier) }}x</strong></div>
+                    <div class="result-row"><span>Required processed raw kelp/day</span><strong>{{ fmt_num(results.required_processed_raw_kelp_per_day) }}</strong></div>
+                    <div class="result-row"><span>Required balanced kelp plants</span><strong>{{ fmt_num(results.required_plants) }}</strong></div>
+                    <div class="result-row"><span>Required balanced smokers</span><strong>{{ fmt_num(results.required_smokers) }}</strong></div>
+                {% else %}
+                    <div class="result-row"><span>Target planner</span><strong>Invalid because net profit per raw kelp is not positive</strong></div>
+                {% endif %}
+            </div>
         {% else %}
             <div class="empty-state">
                 Enter your setup and calculate to see fuel cost, output, stacks per smoker,
-                gross revenue, net profit, and bottleneck analysis.
+                gross revenue, net profit, time to 1B, and the setup needed for your goal.
             </div>
         {% endif %}
     </section>
