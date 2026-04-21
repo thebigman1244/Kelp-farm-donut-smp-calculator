@@ -29,7 +29,4 @@ python app.py
 - `http://127.0.0.1:5000` on your PC
 - `http://YOUR_LOCAL_IP:5000` on another device on your network
 
-## Notes
 
-The biggest hidden variable is kelp growth rate. This app includes an editable
-`Average seconds per kelp growth tick` field so you can tune it to match your server.
