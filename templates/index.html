@@ -14,6 +14,7 @@
 </header>
 
 <div class="grid">
+    <!-- INPUTS -->
     <section class="card form-card">
         <h2>Inputs</h2>
 
@@ -54,9 +55,10 @@
                     <input type="number" min="0.01" step="0.01" name="items_per_blaze_rod" value="{{ form.items_per_blaze_rod }}" required>
                 </label>
 
+                <!-- FIXED LABEL -->
                 <label>
-                    <span>Average seconds per kelp growth tick</span>
-                    <input type="number" min="0.01" step="0.01" name="seconds_per_growth_tick" value="{{ form.seconds_per_growth_tick }}" required>
+                    <span>Avg seconds per successful kelp growth</span>
+                    <input type="number" min="1" step="0.01" name="seconds_per_growth_tick" value="{{ form.seconds_per_growth_tick }}" required>
                 </label>
 
                 <label>
@@ -75,96 +77,90 @@
             </div>
 
             <div class="help-box">
-                <h3>Why these inputs matter</h3>
+                <h3>Important Notes</h3>
                 <ul>
-                    <li><strong>Sell price</strong>: server economy can change.</li>
-                    <li><strong>Blaze rod cost</strong>: directly changes net profit.</li>
-                    <li><strong>Growth tick time</strong>: real farm-side output depends on server behavior and lag.</li>
-                    <li><strong>Smoker timing</strong>: determines your hard throughput ceiling.</li>
-                    <li><strong>Target money + target days</strong>: calculates the balanced setup needed to hit your goal.</li>
+                    <li><strong>Kelp growth</strong> is based on random ticks (default ~487s per growth).</li>
+                    <li><strong>Smoker timing</strong> is fixed throughput (5s per item).</li>
+                    <li><strong>If smokers go empty</strong>, your farm is growth-limited.</li>
+                    <li><strong>If items backlog</strong>, your smokers are the bottleneck.</li>
                 </ul>
             </div>
         </form>
     </section>
 
+    <!-- RESULTS -->
     <section class="card">
         <h2>Results</h2>
 
         {% if results %}
+            <!-- KPI -->
             <div class="kpi-grid">
                 <div class="kpi">
-                    <div class="label">Estimated gross revenue</div>
+                    <div class="label">Gross revenue</div>
                     <div class="value">{{ fmt_money(results.gross_revenue) }}</div>
                 </div>
 
                 <div class="kpi">
-                    <div class="label">Estimated rod cost</div>
+                    <div class="label">Fuel cost</div>
                     <div class="value">{{ fmt_money(results.blaze_rod_total_cost) }}</div>
                 </div>
 
                 <div class="kpi">
-                    <div class="label">Estimated net profit</div>
+                    <div class="label">Net profit</div>
                     <div class="value accent">{{ fmt_money(results.net_profit) }}</div>
                 </div>
 
                 <div class="kpi">
-                    <div class="label">Current bottleneck</div>
+                    <div class="label">Bottleneck</div>
                     <div class="value">{{ results.bottleneck|title }}</div>
                 </div>
             </div>
 
-            <div class="section-title">Fuel and output</div>
+            <!-- OUTPUT -->
+            <div class="section-title">Output & Fuel</div>
             <div class="results-grid">
-                <div class="result-row"><span>Blaze rods total</span><strong>{{ fmt_num(results.blaze_rods_total) }}</strong></div>
-                <div class="result-row"><span>Blaze rod stacks total</span><strong>{{ fmt_num(results.blaze_rod_stacks_total) }}</strong></div>
-                <div class="result-row"><span>Blaze rods per smoker</span><strong>{{ fmt_num(results.blaze_rods_per_smoker) }}</strong></div>
-                <div class="result-row"><span>Stacks per smoker</span><strong>{{ fmt_num(results.blaze_rod_stacks_per_smoker) }}</strong></div>
-                <div class="result-row"><span>Processed raw kelp</span><strong>{{ fmt_num(results.processed_raw_kelp) }}</strong></div>
+                <div class="result-row"><span>Processed kelp</span><strong>{{ fmt_num(results.processed_raw_kelp) }}</strong></div>
                 <div class="result-row"><span>Dried kelp blocks</span><strong>{{ fmt_num(results.dried_kelp_blocks) }}</strong></div>
-                <div class="result-row"><span>Dried kelp block stacks</span><strong>{{ fmt_num(results.dried_kelp_block_stacks) }}</strong></div>
+                <div class="result-row"><span>Block stacks</span><strong>{{ fmt_num(results.dried_kelp_block_stacks) }}</strong></div>
+                <div class="result-row"><span>Blaze rods</span><strong>{{ fmt_num(results.blaze_rods_total) }}</strong></div>
+                <div class="result-row"><span>Rod stacks</span><strong>{{ fmt_num(results.blaze_rod_stacks_total) }}</strong></div>
             </div>
 
-            <div class="section-title">Capacity analysis</div>
+            <!-- PROFIT SPEED -->
+            <div class="section-title">Profit Rate</div>
             <div class="results-grid">
-                <div class="result-row"><span>Farm-side raw kelp estimate</span><strong>{{ fmt_num(results.farm_raw_kelp) }}</strong></div>
-                <div class="result-row"><span>Smoker capacity</span><strong>{{ fmt_num(results.smoker_capacity_raw_kelp) }}</strong></div>
-                <div class="result-row"><span>Unused farm output</span><strong>{{ fmt_num(results.unused_farm_output) }}</strong></div>
-                <div class="result-row"><span>Farm utilization</span><strong>{{ fmt_num(results.farm_utilization) }}%</strong></div>
-                <div class="result-row"><span>Smoker utilization</span><strong>{{ fmt_num(results.smoker_utilization) }}%</strong></div>
+                <div class="result-row"><span>Per hour</span><strong>{{ fmt_money(results.profit_per_hour) }}</strong></div>
+                <div class="result-row"><span>Per day</span><strong>{{ fmt_money(results.profit_per_day) }}</strong></div>
             </div>
 
-            <div class="section-title">Profit rates</div>
+            <!-- TIME TO 1B -->
+            <div class="section-title">Time to 1B</div>
             <div class="results-grid">
-                <div class="result-row"><span>Profit per hour</span><strong>{{ fmt_money(results.profit_per_hour) }}</strong></div>
-                <div class="result-row"><span>Profit per day</span><strong>{{ fmt_money(results.profit_per_day) }}</strong></div>
-
-                {% if results.days_to_1b is not none %}
-                    <div class="result-row"><span>Time to 1B (days)</span><strong>{{ fmt_num(results.days_to_1b) }}</strong></div>
-                    <div class="result-row"><span>Time to 1B (hours)</span><strong>{{ fmt_num(results.hours_to_1b) }}</strong></div>
+                {% if results.days_to_1b %}
+                    <div class="result-row"><span>Days</span><strong>{{ fmt_num(results.days_to_1b) }}</strong></div>
+                    <div class="result-row"><span>Hours</span><strong>{{ fmt_num(results.hours_to_1b) }}</strong></div>
                 {% else %}
-                    <div class="result-row"><span>Time to 1B</span><strong>Not profitable</strong></div>
+                    <div class="result-row"><span>Status</span><strong>Not profitable</strong></div>
                 {% endif %}
             </div>
 
-            <div class="section-title">Target planner</div>
+            <!-- TARGET PLANNER -->
+            <div class="section-title">Target Planner</div>
             <div class="results-grid">
-                <div class="result-row"><span>Target money</span><strong>{{ fmt_money(results.target_money) }}</strong></div>
-                <div class="result-row"><span>Target days</span><strong>{{ fmt_num(results.target_days) }}</strong></div>
-                <div class="result-row"><span>Required daily profit</span><strong>{{ fmt_money(results.target_daily_profit) }}</strong></div>
+                <div class="result-row"><span>Target daily profit</span><strong>{{ fmt_money(results.target_daily_profit) }}</strong></div>
 
-                {% if results.scale_multiplier is not none %}
-                    <div class="result-row"><span>Scale multiplier vs current setup</span><strong>{{ fmt_num(results.scale_multiplier) }}x</strong></div>
-                    <div class="result-row"><span>Required processed raw kelp/day</span><strong>{{ fmt_num(results.required_processed_raw_kelp_per_day) }}</strong></div>
-                    <div class="result-row"><span>Required balanced kelp plants</span><strong>{{ fmt_num(results.required_plants) }}</strong></div>
-                    <div class="result-row"><span>Required balanced smokers</span><strong>{{ fmt_num(results.required_smokers) }}</strong></div>
+                {% if results.required_plants %}
+                    <div class="result-row"><span>Required plants</span><strong>{{ fmt_num(results.required_plants) }}</strong></div>
+                    <div class="result-row"><span>Required smokers</span><strong>{{ fmt_num(results.required_smokers) }}</strong></div>
+                    <div class="result-row"><span>Scale multiplier</span><strong>{{ fmt_num(results.scale_multiplier) }}x</strong></div>
                 {% else %}
-                    <div class="result-row"><span>Target planner</span><strong>Invalid because net profit per raw kelp is not positive</strong></div>
+                    <div class="result-row"><span>Status</span><strong>Not achievable</strong></div>
                 {% endif %}
             </div>
+
         {% else %}
             <div class="empty-state">
-                Enter your setup and calculate to see fuel cost, output, stacks per smoker,
-                gross revenue, net profit, time to 1B, and the setup needed for your goal.
+                Enter your setup and calculate to see full breakdown, profit, and scaling requirements.
             </div>
         {% endif %}
     </section>
