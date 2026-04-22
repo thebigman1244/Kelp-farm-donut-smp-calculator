@@ -14,7 +14,7 @@ DEFAULTS = {
     "blaze_rod_cost": 150.0,
     "seconds_per_smoker_item": 5.0,
     "items_per_blaze_rod": 12.0,
-    "seconds_per_growth_tick": 4.0,
+    "seconds_per_growth_tick": 487.64,
     "target_money": 1_000_000_000.0,
     "target_days": 60.0,
 }
